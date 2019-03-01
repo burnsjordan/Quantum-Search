@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 # Adjustable Parameters
 alpha = 1/(2**(1/2)) # Proportion of target solutions in the initial state
-applications = 100 # Maximum number of times to apply quantum search
+applications = 10 # Maximum number of times to apply quantum search
 t = sp.pi*(2**(1/2))/2 # Time to measure at
 a = 1.0 # Proportion of |x><x| in the hamiltonian
 b = 1.0 # Proportion of |psi><psi| in the hamiltonian
@@ -31,7 +31,6 @@ for i in range(applications):
         H = np.add(H,b*np.kron(np.transpose(psi),psi))
         H = np.add(H,c*np.kron(np.transpose(x),psi))
         H = np.add(H,d*np.kron(np.transpose(psi),x))
-        H = H*(1/(np.linalg.det(H)**(1/2)))
         H = spl.expm(-1j*t*H)
 
     # Function that applies quantum search using the specified hamiltonian
@@ -51,6 +50,5 @@ for i in range(applications):
 
 # Print result
 plt.plot(results)
-axes = plt.gca()
-axes.set_ylim([0,1])
+plt.ylim([0,1])
 plt.show()
