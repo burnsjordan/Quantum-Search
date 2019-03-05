@@ -1,6 +1,7 @@
 from quantum_search import apply_circuit
 import matplotlib.pyplot as plt
 import sys
+import numpy as np
 
 def vary_coefficients(t,a,b,c,d,alpha,applications):
     a_results = []
@@ -41,6 +42,7 @@ def vary_coefficients(t,a,b,c,d,alpha,applications):
     ax4.set_xlabel('d')
     ax4.set_title('D Results')
     plt.ylabel('Probability')
+    plt.gcf().tight_layout()
     plt.show()
 
 def vary_time(t,a,b,c,d,alpha,applications):
@@ -76,6 +78,52 @@ def vary_applications(t,a,b,c,d,alpha,applications):
     plt.xlabel('Applications')
     plt.show()
 
+def ab_heatmap(t,alpha,applications):
+    results = []
+    for i in range(100):
+        temp_results = []
+        for j in range(100):
+            temp_results.append(apply_circuit(t,1.0*0.01*i,1.0*0.01*j,0,0,alpha,applications))
+        results.append(temp_results)
+    x = np.arange(0,1.0,0.01)
+    im = plt.gca().pcolormesh(x, x, results)
+    plt.gcf().colorbar(im)
+    plt.title('Probability')
+    plt.xlabel('a')
+    plt.ylabel('b')
+    plt.show()
+
+def cd_heatmap(t,alpha,applications):
+    results = []
+    for i in range(100):
+        temp_results = []
+        for j in range(100):
+            temp_results.append(apply_circuit(t,0,0,1.0*0.01*i,1.0*0.01*j,alpha,applications))
+        results.append(temp_results)
+    x = np.arange(0,1.0,0.01)
+    im = plt.gca().pcolormesh(x, x, results)
+    plt.gcf().colorbar(im)
+    plt.title('Probability')
+    plt.xlabel('c')
+    plt.ylabel('d')
+    plt.show()
+
+def ta_heatmap(a,b,c,d,alpha,max_time,max_applications,resolution):
+    results = []
+    for i in range(max_applications):
+        temp_results = []
+        for j in range(resolution*max_time):
+            temp_results.append(apply_circuit(j/resolution,a,b,c,d,alpha,i))
+        results.append(temp_results)
+    y = np.arange(0,max_applications)
+    x = np.arange(0,max_time,1/resolution)
+    im = plt.gca().pcolormesh(x,y,results, vmin=0, vmax=1.0)
+    plt.gcf().colorbar(im)
+    plt.title('Probability')
+    plt.xlabel('Time')
+    plt.ylabel('Applications')
+    plt.show()
+
 if (str(sys.argv[1])=='coefficients'):
     vary_coefficients(float(sys.argv[2]),float(sys.argv[3]),float(sys.argv[4]),float(sys.argv[5]),float(sys.argv[6]),float(sys.argv[7]),int(sys.argv[8]))
 elif (str(sys.argv[1])=='time'):
@@ -84,5 +132,11 @@ elif (str(sys.argv[1])=='alpha'):
     vary_alpha(float(sys.argv[2]),float(sys.argv[3]),float(sys.argv[4]),float(sys.argv[5]),float(sys.argv[6]),float(sys.argv[7]),int(sys.argv[8]))
 elif (str(sys.argv[1])=='applications'):
     vary_applications(float(sys.argv[2]),float(sys.argv[3]),float(sys.argv[4]),float(sys.argv[5]),float(sys.argv[6]),float(sys.argv[7]),int(sys.argv[8]))
+elif (str(sys.argv[1])=='ab_heatmap'):
+    ab_heatmap(float(sys.argv[2]),float(sys.argv[3]),int(sys.argv[4]))
+elif (str(sys.argv[1])=='cd_heatmap'):
+    cd_heatmap(float(sys.argv[2]),float(sys.argv[3]),int(sys.argv[4]))
+elif (str(sys.argv[1])=='ta_heatmap'):
+    ta_heatmap(float(sys.argv[2]),float(sys.argv[3]),float(sys.argv[4]),float(sys.argv[5]),float(sys.argv[6]),int(sys.argv[7]),int(sys.argv[8]),int(sys.argv[9]))
 else:
     print('Unknown Command')
